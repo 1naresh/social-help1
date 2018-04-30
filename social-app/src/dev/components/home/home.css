@@ -2,3 +2,16 @@
     color: red;
     background-color: palegreen;
 }
+.h3, h3 {
+    font-size: 24px;
+    color: orangered;
+}
+p {
+    margin: 0 0 10px;
+    color: #d4ea2b;
+    font-size: 17px;
+}
+.h2, h2 {
+    font-size: 24px;
+    color: orangered;
+}
