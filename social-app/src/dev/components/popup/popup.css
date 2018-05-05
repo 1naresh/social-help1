@@ -1,0 +1,18 @@
+.transition-enter {
+    transform: scale(0);
+  }
+  .transition-enter-active {
+    transform: scale(1);
+    transition: transform 1000ms ease;
+  }
+  .transition-exit {
+    transform: scale(1);
+  }
+  .transition-exit-active {
+    transform: scale(0);
+    transition: transform 1000ms ease;
+  }
+  .button{
+    color: #0006ff;
+    background: #e4b0b0;
+  }

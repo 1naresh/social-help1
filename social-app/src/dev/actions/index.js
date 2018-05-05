@@ -5,9 +5,7 @@ export function onSignup(user){
     }
 }
 export function onLogin(credentials){
-    // fetch('/users/login')
-    //     .then(res =>res.json())
-    //     .then(res => console.log(res))
+    console.log(credentials)
     localStorage.token="naresh"
     return{
         type: "ON_LOGIN",

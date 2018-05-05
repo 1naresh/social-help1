@@ -1,115 +1,134 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./signup.css";
-import NavbarSocial from '../navbar/navbar'
+
 export default class Signup extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       name:"",
       phone:"",
+      email:"",
+      password:"",
+      confirmPassword:"",
+      sent_otp:"",
+      entered_otp:"",
       isLoading: false,
-      email: "",
-      password: "",
-      confirmPassword: "",
-      confirmationCode: "",
-      newUser: null
+      otp_sent:false,
+      otp_err:false
     };
-    this.gotoPage=this.gotoPage.bind(this)
   }
-  gotoPage(page){
-    this.props.history.push(page)
+  handleChange = e => {
+    this.setState({[e.target.name]:e.target.value})
   }
-  validateForm() {
+  validateForm = e => {
     return (
-      this.state.email.length > 0 &&
-      this.state.password.length > 0 &&
+      this.state.name.length >0 &&
+      this.state.phone.length >= 10 &&
+      this.state.email.length >5 &&
+      this.state.password.length > 5 &&
       this.state.password === this.state.confirmPassword
-    );
+    )
   }
-
-  validateConfirmationForm() {
-    return this.state.confirmationCode.length > 0;
-  }
-
-  handleChange = event => {
-    this.setState({
-      [event.target.id]: event.target.value
-    });
-  }
-
   handleSubmit = async event => {
     event.preventDefault();
-    const { name,phone,email,password } =this.state
-    let user={name,phone,email,password}
-    fetch('/users/signup', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(user)
-        })
-
-    this.setState({ isLoading: true });
-
-    this.setState({ newUser: "test" });
-
-    this.setState({ isLoading: false });
+    const otp =Math.round(Math.random()*1000000)
+    // const { name,phone,email,password,confirmPassword } = this.state
+    // fetch('/users/signup', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Accept': 'application/json',
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({name,phone,email,password,confirmPassword,otp})
+    // })
+    console.log(otp)
+    this.setState({ isLoading: true,otp_sent:true,sent_otp:otp });
+    this.props.otpSent()
   }
 
   handleConfirmationSubmit = async event => {
     event.preventDefault();
-
+    const { sent_otp,entered_otp } = this.state
+    if( parseInt(entered_otp ,10) === sent_otp){
+      this.setState({otp_success:true})
+      this.props.otpSuccess()
+    }else{
+      this.setState({otp_err:true})
+    }
     this.setState({ isLoading: true });
   }
 
 
   render() {
+    if(this.state.otp_sent){
+      return (
+        <div>
+          <FormGroup  bsSize="large">
+            <ControlLabel>otp</ControlLabel>
+            <FormControl
+              autoFocus
+              type="text"
+              name="entered_otp"
+              onChange={this.handleChange}
+              value={this.state.entered_otp}
+            />
+            { this.state.otp_err && 
+             <p>you entered wrong otp</p> }
+            <button onClick={this.handleConfirmationSubmit}>submit</button>
+          </FormGroup>
+        </div>
+      )
+    }
     return (
+      
       <div className="signup">
-        <NavbarSocial gotoPage={(page)=>this.gotoPage(page)} />
+      {/* <NavbarSocial /> */}
         <form onSubmit={this.handleSubmit}>
-        <FormGroup controlId="name" bsSize="large">
+        <FormGroup  bsSize="large">
             <ControlLabel>Name</ControlLabel>
             <FormControl
               autoFocus
-              type="name"
-              value={this.state.name}
+              type="text"
+              name="name"
               onChange={this.handleChange}
+              value={this.state.name}
             />
           </FormGroup>
-          <FormGroup controlId="phone" bsSize="large">
+          <FormGroup  bsSize="large">
             <ControlLabel>phone NO</ControlLabel>
             <FormControl
               autoFocus
-              type="phone"
-              value={this.state.phone}
+              type="number"
+              name="phone"
               onChange={this.handleChange}
+              value={this.state.phone}
             />
           </FormGroup>
-          <FormGroup controlId="email" bsSize="large">
+          <FormGroup  bsSize="large">
             <ControlLabel>Email</ControlLabel>
             <FormControl
               autoFocus
               type="email"
-              value={this.state.email}
+              name="email"
               onChange={this.handleChange}
+              value={this.state.email}
             />
           </FormGroup>
-          <FormGroup controlId="password" bsSize="large">
+          <FormGroup  bsSize="large">
           <ControlLabel>Password</ControlLabel>
           <FormControl
             value={this.state.password}
+            name="password"
             onChange={this.handleChange}
             type="password"
           />
         </FormGroup>
-        <FormGroup controlId="confirmPassword" bsSize="large">
+        <FormGroup  bsSize="large">
           <ControlLabel>Confirm Password</ControlLabel>
           <FormControl
             value={this.state.confirmPassword}
+            name="confirmPassword"
             onChange={this.handleChange}
             type="password"
           />
@@ -117,11 +136,14 @@ export default class Signup extends Component {
           <Button
             block
             bsSize="large"
-            disabled={!this.validateForm()}
+            // disabled={!this.validateForm()}
             type="submit"
-          >
-            signup
+            onClick={this.handleSubmit}
+        
+          >signup
           </Button>
+       
+    
         </form>
       </div>
     );

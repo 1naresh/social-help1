@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Button, FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import "./loginpages.css";
-import NavbarSocial from '../navbar/navbar';
 
 export default class Login extends Component {
   constructor(props) {
@@ -9,39 +8,44 @@ export default class Login extends Component {
 
     this.state = {
       phone: "",
-      password: ""
+      password: "",
+      credentials_err:false
     };
-    this.gotoPage=this.gotoPage.bind(this)
   }
-  gotoPage(page){
-    this.props.history.push(page)
+
+  validateForm() {
+    return this.state.phone.length > 0 && this.state.password.length > 0;
   }
 
   handleChange = event => {
     this.setState({
-      [event.target.id]: event.target.value
+      [event.target.name]: event.target.value
     });
   }
 
   handleSubmit = event => {
-    event.preventDefault();
-    const { phone,password } =this.state;
-    this.props.onLogin("a")
-    if(phone === "9652" && password === '1234'){
-      console.log(77)
+    let user ={phone:9652,password:'abcd',name:"naresh"}
+    const {phone,password } =this.state
+    if( parseInt(phone ,10) === user.phone && password === user.password ){
+      this.props.isLoggedIn()
+      localStorage.token="naresh"
+      this.props.onLogin({is_logged_in:true})
+    }else{
+      this.setState({credentials_err:true})
     }
+    event.preventDefault(); 
   }
 
   render() {
     return (
       <div className="Login">
-       <NavbarSocial gotoPage={(page)=>this.gotoPage(page)} />
-        <form onSubmit={this.handleSubmit}>
-          <FormGroup controlId="phone" bsSize="large">
-            <ControlLabel>Phone</ControlLabel>
+        <form >
+          <FormGroup controlId="email" bsSize="large">
+            <ControlLabel>phone</ControlLabel>
             <FormControl
               autoFocus
-              type="text"
+              type="number"
+              name="phone"
               value={this.state.phone}
               onChange={this.handleChange}
             />
@@ -50,19 +54,22 @@ export default class Login extends Component {
             <ControlLabel>Password</ControlLabel>
             <FormControl
               value={this.state.password}
+              name="password"
               onChange={this.handleChange}
               type="password"
             />
           </FormGroup>
+          { this.state.credentials_err && 
+            <p> you entered wrong phone number or password </p> }
           <Button
             block
             bsSize="large"
-            // disabled={!this.validateForm()}
+            disabled={!this.validateForm()}
+            onClick={this.handleSubmit}
             type="submit"
           >
             Login
           </Button>
-          
         </form>
       </div>
     );

@@ -4,7 +4,6 @@ import Login from '../components/loginpage/loginpage';
 import { onLogin } from '../actions'
 
 function mapStateToProps(state){
-    console.log(state)
     return {
         users:state.users
     }
